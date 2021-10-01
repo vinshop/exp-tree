@@ -48,15 +48,22 @@ func parseTree(v interface{}) (Node, error) {
 	}
 }
 
-func ParseTree(s string) (Node, error) {
+func ParseTree(s string) (*Tree, error) {
 	res := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(s), &res); err != nil {
 		return nil, err
 	}
-	return parseTree(res)
+	head, err := parseTree(res)
+	if err != nil {
+		return nil, err
+	}
+	return &Tree{
+		head:      head,
+		variables: nil,
+	}, nil
 }
 
-func JSON(tree Node) (string, error) {
-	treeJSON, err := json.Marshal(tree)
+func JSON(tree *Tree) (string, error) {
+	treeJSON, err := json.Marshal(tree.head)
 	return string(treeJSON), err
 }

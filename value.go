@@ -5,3 +5,7 @@ type NodeValue interface {
 	ComputeMap() ComputeMap
 	Byte() []byte
 }
+
+type NodeValueWithName interface {
+	Name() string
+}
