@@ -2,6 +2,7 @@ package exp_tree
 
 import "fmt"
 
+//Float64 type
 type Float64 float64
 
 var ErrCastFloat64 = func(v NodeValue) error { return fmt.Errorf("%v is not float64ean", v) }

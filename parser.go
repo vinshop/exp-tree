@@ -48,6 +48,7 @@ func parseTree(v interface{}) (Node, error) {
 	}
 }
 
+//ParseTree parse a valid string into expression tree, else return ErrParseTree error
 func ParseTree(s string) (*Tree, error) {
 	res := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(s), &res); err != nil {
@@ -59,7 +60,6 @@ func ParseTree(s string) (*Tree, error) {
 	}
 	return &Tree{
 		head:      head,
-		variables: nil,
 	}, nil
 }
 

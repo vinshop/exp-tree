@@ -8,8 +8,7 @@ import (
 type Variables map[Variable]NodeValue
 
 type Tree struct {
-	head      Node
-	variables Variables
+	head Node
 }
 
 var ErrValueNil = errors.New("value must not nil")
@@ -39,32 +38,34 @@ func (t *Tree) Compute(op OpType, values ...NodeValue) (NodeValue, error) {
 	return f(values...), nil
 }
 
-func (t *Tree) getVariable(k Variable) (NodeValue, error) {
-	variable, ok := t.variables[k]
+func getVariable(k Variable, vs Variables) (NodeValue, error) {
+	if vs == nil {
+		return nil, ErrVariableNotFound(k)
+	}
+	variable, ok := vs[k]
 	if !ok {
 		return nil, ErrVariableNotFound(k)
 	}
 	return variable, nil
 }
 
-func (t *Tree) Caculate(variables Variables) (NodeValue, error) {
-	t.variables = variables
-	return t.caculate(None, t.head)
+func (t *Tree) Calculate(variables Variables) (NodeValue, error) {
+	return t.calculate(None, t.head, variables)
 }
 
-func (t *Tree) caculate(op OpType, n Node) (NodeValue, error) {
+func (t *Tree) calculate(op OpType, n Node, variables Variables) (NodeValue, error) {
 	nType := n.Type()
 	switch nType {
 	case nodeTypeValue:
 		return n.(Value).value, nil
 	case nodeTypeVariable:
 		v := n.(Variable)
-		return t.getVariable(v)
+		return getVariable(v, variables)
 	case nodeTypeOp:
 		opGroup := n.(Op)
 		val := make([]NodeValue, 0, len(opGroup))
 		for cOp, cNode := range opGroup {
-			v, err := t.caculate(cOp, cNode)
+			v, err := t.calculate(cOp, cNode, variables)
 			if err != nil {
 				return nil, err
 			}
@@ -75,7 +76,7 @@ func (t *Tree) caculate(op OpType, n Node) (NodeValue, error) {
 		group := n.(Group)
 		val := make([]NodeValue, 0, len(group))
 		for _, cNode := range group {
-			v, err := t.caculate(None, cNode)
+			v, err := t.calculate(None, cNode, variables)
 			if err != nil {
 				return nil, err
 			}

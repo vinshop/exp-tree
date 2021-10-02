@@ -2,6 +2,7 @@ package exp_tree
 
 import "fmt"
 
+//Bool type
 type Bool bool
 
 const (

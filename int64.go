@@ -2,6 +2,7 @@ package exp_tree
 
 import "fmt"
 
+//Int64 currently not using this type
 type Int64 int64
 
 var ErrCastInt64 = func(v NodeValue) error { return fmt.Errorf("%v is not int64ean", v) }
