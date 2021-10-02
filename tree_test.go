@@ -6,7 +6,7 @@ import (
 )
 
 func TestTree_JSON(t *testing.T) {
-	q := `{"and":[":con",{"lt":[1,2]}]}`
+	q := `{"and":["@con",{"lt":[1,2]}]}`
 	tree, err := ParseTree(q)
 	assert.Nil(t, err)
 	treeJSON, err := tree.JSON()
@@ -15,7 +15,7 @@ func TestTree_JSON(t *testing.T) {
 }
 
 func TestTree_Calculate_NoVariable(t *testing.T) {
-	q := `{"and": [":con", {"lt": [1, 2]}]}`
+	q := `{"and": ["@con", {"lt": [1, 2]}]}`
 	tree, err := ParseTree(q)
 
 	assert.Nil(t, err)
@@ -25,7 +25,7 @@ func TestTree_Calculate_NoVariable(t *testing.T) {
 }
 
 func TestTree_Calculate(t *testing.T) {
-	q := `{"and": [":con", {"lt": [1, 2]}]}`
+	q := `{"and": ["@con", {"lt": [1, 2]}]}`
 	tree, err := ParseTree(q)
 
 	assert.Nil(t, err)
@@ -50,7 +50,7 @@ func TestTree_Calculate2(t *testing.T) {
 }
 
 func TestTree_CalculateString(t *testing.T) {
-	q := `{"in": [":val", "A", "B", "C"]}`
+	q := `{"in": ["@val", "A", "B", "C"]}`
 	tree, err := ParseTree(q)
 	assert.Nil(t, err)
 

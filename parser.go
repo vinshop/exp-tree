@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-const VariableIndicator = ':'
+const VariableIndicator = '@'
 
 func parseTree(v interface{}) (Node, error) {
 	kind := reflect.TypeOf(v).Kind()

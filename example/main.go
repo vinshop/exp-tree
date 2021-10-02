@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	tree, err := et.ParseTree(`{"and":[":a",{"lt":[1,2]}]}`)
+	tree, err := et.ParseTree(`{"and":["@a",{"lt":[1,2]}]}`)
 	if err != nil {
 		panic(err)
 	}
