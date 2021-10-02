@@ -17,7 +17,7 @@ func parseTree(v interface{}) (Node, error) {
 	case reflect.String:
 		vString, _ := v.(string)
 		if len(vString) > 0 && vString[0] == VariableIndicator {
-			return Variable(vString), nil
+			return Variable(vString[1:]), nil
 		}
 		return Value{String(v.(string))}, nil
 	case reflect.Slice:

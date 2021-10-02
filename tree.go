@@ -86,3 +86,7 @@ func (t *Tree) caculate(op OpType, n Node) (NodeValue, error) {
 		return nil, ErrInvalidNodeType(n)
 	}
 }
+
+func (t *Tree) JSON() (string, error) {
+	return JSON(t)
+}

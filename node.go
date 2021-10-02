@@ -1,5 +1,7 @@
 package exp_tree
 
+import "fmt"
+
 type Group []Node
 
 func (Group) Type() NodeType {
@@ -10,6 +12,10 @@ type Variable string
 
 func (Variable) Type() NodeType {
 	return nodeTypeVariable
+}
+
+func (v Variable) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`":%v"`, v)), nil
 }
 
 type Value struct {
