@@ -19,7 +19,7 @@ Expression tree is in format:
       "<opetator>": [
         "<arg>",
         "<arg>",
-        "<:variable>"
+        "<@variable>"
       ]
     }
   ]
@@ -27,9 +27,9 @@ Expression tree is in format:
 ```
 example
 ```json
-{"and":[":a",{"lt":[1,2]}]}
+{"and":["@a",{"lt":[1,2]}]}
 ```
-is equivalent to `:a and (1 < 2)` with `a` is a variable
+is equivalent to `@a and (1 < 2)` with `a` is a variable
 ### Parse tree
 ```go
 package main
@@ -40,7 +40,7 @@ import (
 )
 
 func main() {
-	tree, err := et.ParseTree(`{"and":[":a",{"lt":[1,2]}]}`)
+	tree, err := et.ParseTree(`{"and":["@a",{"lt":[1,2]}]}`)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ import (
 )
 
 func main() {
-	tree, err := et.ParseTree(`{"and":[":a",{"lt":[1,2]}]}`)
+	tree, err := et.ParseTree(`{"and":["@a",{"lt":[1,2]}]}`)
 	if err != nil {
 		panic(err)
 	}
