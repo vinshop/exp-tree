@@ -16,9 +16,8 @@ var float64ComputeMap = ComputeMap{
 	Gte:  float64Gte,
 	Lt:   float64Lt,
 	Lte:  float64Lte,
+	In:   float64In,
 }
-
-
 
 var float64Eq ComputeFunc = func(values ...NodeValue) NodeValue {
 	for i := 1; i < len(values); i++ {
@@ -79,6 +78,19 @@ var float64Lte ComputeFunc = func(values ...NodeValue) NodeValue {
 		}
 	}
 	return True
+}
+
+var float64In ComputeFunc = func(values ...NodeValue) NodeValue {
+	v := values[0].(Float64)
+	if len(values) == 1 {
+		return True
+	}
+	for i := 1; i < len(values); i++ {
+		if values[i].(Float64) == v {
+			return True
+		}
+	}
+	return False
 }
 
 func validateFloat64(values ...NodeValue) error {
