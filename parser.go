@@ -17,7 +17,7 @@ func parseTree(v interface{}) (Node, error) {
 	case reflect.String:
 		vString, _ := v.(string)
 		if len(vString) > 0 && vString[0] == VariableIndicator {
-			return Variable(vString), nil
+			return Variable(vString[1:]), nil
 		}
 		return Value{String(v.(string))}, nil
 	case reflect.Slice:
@@ -48,15 +48,22 @@ func parseTree(v interface{}) (Node, error) {
 	}
 }
 
-func ParseTree(s string) (Node, error) {
+//ParseTree parse a valid string into expression tree, else return ErrParseTree error
+func ParseTree(s string) (*Tree, error) {
 	res := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(s), &res); err != nil {
 		return nil, err
 	}
-	return parseTree(res)
+	head, err := parseTree(res)
+	if err != nil {
+		return nil, err
+	}
+	return &Tree{
+		head:      head,
+	}, nil
 }
 
-func JSON(tree Node) (string, error) {
-	treeJSON, err := json.Marshal(tree)
+func JSON(tree *Tree) (string, error) {
+	treeJSON, err := json.Marshal(tree.head)
 	return string(treeJSON), err
 }
