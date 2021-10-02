@@ -43,7 +43,7 @@ func getVariable(k Variable, vs Variables) (NodeValue, error) {
 		return nil, ErrVariableNotFound(k)
 	}
 	variable, ok := vs[k]
-	if !ok {
+	if !ok || variable == nil {
 		return nil, ErrVariableNotFound(k)
 	}
 	return variable, nil

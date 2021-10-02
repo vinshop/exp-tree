@@ -66,7 +66,7 @@ func main() {
 		panic(err)
 	}
 	res, err := tree.Calculate(et.Variables{
-		"a": et.True,
+		"a": et.True, // or et.Var(true)
 	})
 	fmt.Println(res) // true
 }
@@ -74,3 +74,4 @@ func main() {
 Current only support for String, Float64, Bool type
 
 With Bool type, we already define True and False
+You could use `et.Var(value)` to auto convert value into corresponding type
