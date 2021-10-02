@@ -15,7 +15,7 @@ func (Variable) Type() NodeType {
 }
 
 func (v Variable) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%v%v"`, VariableIndicator, v)), nil
+	return []byte(fmt.Sprintf(`"%c%v"`, VariableIndicator, v)), nil
 }
 
 type Value struct {
