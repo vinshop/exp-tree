@@ -25,6 +25,8 @@ const (
 	Not   OpType = "not"
 	Xor   OpType = "xor"
 	In    OpType = "in"
+	AnyIn OpType = "anyin"
+	AllIn OpType = "allin"
 )
 
 type Node interface {
