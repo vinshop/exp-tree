@@ -2,85 +2,62 @@ package exp_tree
 
 import "fmt"
 
-//Bool type
 type Bool bool
 
-const (
-	True  Bool = true
-	False Bool = false
-)
+var True = Bool(true)
+var False = Bool(false)
 
-var ErrCastBool = func(v NodeValue) error { return fmt.Errorf("%v is not boolean", v) }
-
-var boolComputeMap = ComputeMap{
-	None: boolAnd,
-	And:  boolAnd,
-	Or:   boolOr,
-	Not:  boolNot,
-	Eq:   boolEq,
-	Xor:  boolXor,
+var ErrNotBool = func(v interface{}) error {
+	return fmt.Errorf("%v is not boolean", v)
 }
 
-var boolAnd ComputeFunc = func(values ...NodeValue) NodeValue {
-	for _, v := range values {
-		vBool := v.(Bool)
-		if !vBool {
-			return False
-		}
+var isBools ValidateFunc = func(value Value) error {
+	if err := isArray(value); err != nil {
+		return err
 	}
-	return True
-}
-
-var boolOr ComputeFunc = func(values ...NodeValue) NodeValue {
-	for _, v := range values {
-		vBool := v.(Bool)
-		if vBool {
-			return True
-		}
-	}
-	return False
-}
-
-var boolNot ComputeFunc = func(values ...NodeValue) NodeValue {
-	res := boolAnd(values...)
-	return !res.(Bool)
-}
-
-var boolEq ComputeFunc = func(values ...NodeValue) NodeValue {
-	for i := 1; i < len(values); i++ {
-		if values[i-1].(Bool) != values[i].(Bool) {
-			return False
-		}
-	}
-	return True
-}
-
-var boolXor ComputeFunc = func(values ...NodeValue) NodeValue {
-	res := False
-	for i := 1; i < len(values); i++ {
-		res = res != values[i].(Bool)
-	}
-	return res
-}
-
-func validateBool(values ...NodeValue) error {
-	for _, v := range values {
-		_, ok := v.(Bool)
-		if !ok {
-			return ErrCastBool(v)
+	for _, v := range value.(Array) {
+		if err := isBool(v); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func (b Bool) Validate(value ...NodeValue) error {
-	return validateBool(value...)
+var isBool ValidateFunc = func(value Value) error {
+	if _, ok := value.(Bool); !ok {
+		return ErrNotBool(value)
+	}
+	return nil
 }
 
-func (Bool) ComputeMap() ComputeMap {
-	return boolComputeMap
+func (b Bool) t() NodeType {
+	return NValue
 }
 
-func (b Bool) Byte() []byte {
-	return []byte(fmt.Sprint(b))
+var boolAnd = isBools.With(func(values Value) Value {
+	for _, v := range values.(Array) {
+		if v == False {
+			return False
+		}
+	}
+	return True
+})
+
+var boolOr = isBools.With(func(values Value) Value {
+	for _, v := range values.(Array) {
+		if v == True {
+			return True
+		}
+	}
+	return False
+})
+
+var boolMp = map[Operator]*Math{
+	None: Keep,
+	And:  boolAnd,
+	Or:   boolOr,
+}
+
+func (b Bool) f(op Operator) *Math {
+	return boolMp[op]
 }

@@ -1,37 +1,40 @@
 package exp_tree
 
-import "fmt"
+type NodeType int
+
+const (
+	NOperation NodeType = iota
+	NGroup
+	NValue
+	NVariable
+)
+
+type Node interface {
+	t() NodeType
+}
+
+type Op struct {
+	op   Operator
+	args Node
+}
+
+func (Op) t() NodeType {
+	return NOperation
+}
 
 type Group []Node
 
-func (Group) Type() NodeType {
-	return nodeTypeGroup
+func (Group) t() NodeType {
+	return NGroup
+}
+
+type Value interface {
+	t() NodeType
+	f(op Operator) *Math
 }
 
 type Variable string
 
-func (Variable) Type() NodeType {
-	return nodeTypeVariable
-}
-
-func (v Variable) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%c%v"`, VariableIndicator, v)), nil
-}
-
-type Value struct {
-	value NodeValue
-}
-
-func (v Value) MarshalJSON() ([]byte, error) {
-	return v.value.Byte(), nil
-}
-
-func (Value) Type() NodeType {
-	return nodeTypeValue
-}
-
-type Op map[OpType]Node
-
-func (Op) Type() NodeType {
-	return nodeTypeOp
+func (Variable) t() NodeType {
+	return NVariable
 }

@@ -5,67 +5,66 @@ import (
 	"testing"
 )
 
-func TestTree_JSON(t *testing.T) {
-	q := `{"and":["@con",{"lt":[1,2]}]}`
-	tree, err := ParseTree(q)
-	assert.Nil(t, err)
-	treeJSON, err := tree.JSON()
-	assert.Nil(t, err)
-	assert.Equal(t, q, treeJSON)
-}
+func TestBool(t *testing.T) {
+	tree := Op{
+		op: And,
+		args: Group{
+			True,
+			Op{
+				op: Or,
+				args: Group{
+					False,
+					True,
+				},
+			},
+		},
+	}
+	// True and ( False or True )
 
-func TestTree_Calculate_NoVariable(t *testing.T) {
-	q := `{"and": ["@con", {"lt": [1, 2]}]}`
-	tree, err := ParseTree(q)
-
-	assert.Nil(t, err)
-
-	_, err = tree.Calculate(nil)
-	assert.Equal(t, ErrVariableNotFound("con"), err)
-}
-
-func TestTree_Calculate(t *testing.T) {
-	q := `{"and": ["@con", {"lt": [1, 2]}]}`
-	tree, err := ParseTree(q)
-
-	assert.Nil(t, err)
-
-	res, err := tree.Calculate(Variables{
-		"con": True,
-	})
-
+	res, err := calc(None, tree)
 	assert.Nil(t, err)
 	assert.Equal(t, True, res)
 }
 
-func TestTree_Calculate2(t *testing.T) {
-	q := `{"eq":[{"sum":[1,2,3,4,5]},{"sum":[{"mul":[2,5]},5]}]}`
-	tree, err := ParseTree(q)
-	assert.Nil(t, err)
+func TestNumberIn(t *testing.T) {
+	tree := Op{
+		op: In,
+		args: Group{
+			Number(1),
+			Array{
+				Number(1),
+				Number(2),
+			},
+			Array{
+				Number(1),
+				Number(2),
+				Number(3),
+			},
+		},
+	}
 
-	res, err := tree.Calculate(nil)
-
+	resp, err := calc(And, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, True, res)
+	assert.Equal(t, True, resp)
 }
 
-func TestTree_CalculateString(t *testing.T) {
-	q := `{"in": ["@val", "A", "B", "C"]}`
-	tree, err := ParseTree(q)
-	assert.Nil(t, err)
+func TestNumber(t *testing.T) {
+	tree := Op{
+		op: Mul,
+		args: Group{
+			Op{
+				op: Sum,
+				args: Group{
+					Number(1),
+					Number(2),
+					Number(3),
+				},
+			},
+			Number(2),
+		},
+	}
 
-	_, err = tree.Calculate(nil)
-	assert.Equal(t, ErrVariableNotFound(Variable("val")), err)
-
-	res, err := tree.Calculate(Variables{
-		"val": String("A"),
-	})
+	res, err := calc(None, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, True, res)
-	res, err = tree.Calculate(Variables{
-		"val": String("D"),
-	})
-	assert.Nil(t, err)
-	assert.Equal(t, False, res)
-
+	assert.Equal(t, Number((1+2+3)*2), res)
 }
