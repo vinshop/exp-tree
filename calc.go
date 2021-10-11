@@ -1,12 +1,12 @@
 package exp_tree
 
 func calc(op Operator, t Node) (Value, error) {
-	switch t.t() {
+	switch t.Type() {
 	case NValue:
 		value := t.(Value)
-		return value.f(op).calc(value)
+		return value.F(op).calc(value)
 	case NOperation:
-		op := t.(Op)
+		op := t.(Operation)
 		return calc(op.op, op.args)
 	case NGroup:
 		group := t.(Group)

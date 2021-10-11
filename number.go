@@ -1,51 +1,32 @@
 package exp_tree
 
-import "fmt"
-
 type Number float64
 
-var ErrNotNumber = func(val interface{}) error {
-	return fmt.Errorf("%v is not a number", val)
-}
-
-var ErrNotNumbers = func(val interface{}) error {
-	return fmt.Errorf("%v is not a array of number", val)
-}
-
-var isNumbers ValidateFunc = func(value Value) error {
-	if err := isArray(value); err != nil {
-		return err
-	}
-	for _, v := range value.(Array) {
-		if err := isNumber(v); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-var isNumber ValidateFunc = func(v Value) error {
-	if _, ok := v.(Number); !ok {
-		return ErrNotNumber(v)
-	}
-	return nil
-}
-
-func (n Number) f(op Operator) *Math {
+func (n Number) F(op Operator) *Math {
 	switch op {
 	case None:
 		return Keep
 	default:
-		return float64Mp[op]
+		return numberMap[op]
 	}
-
 }
 
-func (n Number) t() NodeType {
+func (n Number) Type() NodeType {
 	return NValue
 }
 
-var numberSum = isNumbers.With(func(values Value) Value {
+var numberMap = map[Operator]*Math{
+	Sum: numberSum,
+	Mul: numberMul,
+	Gt:  numberGt,
+	Gte: numberGte,
+	Lt:  numberLt,
+	Lte: numberLte,
+	Div: numberDiv,
+	In:  numberIn,
+}
+
+var numberSum = isNumberArr.With(func(values Value) Value {
 	res := Number(0)
 	for _, v := range values.(Array) {
 		res += v.(Number)
@@ -53,7 +34,7 @@ var numberSum = isNumbers.With(func(values Value) Value {
 	return res
 })
 
-var numberMul = isNumbers.With(func(values Value) Value {
+var numberMul = isNumberArr.With(func(values Value) Value {
 	res := Number(1)
 	for _, v := range values.(Array) {
 		res *= v.(Number)
@@ -61,7 +42,7 @@ var numberMul = isNumbers.With(func(values Value) Value {
 	return res
 })
 
-var numberGt = isNumbers.With(func(value Value) Value {
+var numberGt = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) >= values[i].(Number) {
@@ -71,7 +52,7 @@ var numberGt = isNumbers.With(func(value Value) Value {
 	return True
 })
 
-var numberGte = isNumbers.With(func(value Value) Value {
+var numberGte = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) > values[i].(Number) {
@@ -81,7 +62,7 @@ var numberGte = isNumbers.With(func(value Value) Value {
 	return True
 })
 
-var numberLt = isNumbers.With(func(value Value) Value {
+var numberLt = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) <= values[i].(Number) {
@@ -91,7 +72,7 @@ var numberLt = isNumbers.With(func(value Value) Value {
 	return True
 })
 
-var numberLte = isNumbers.With(func(value Value) Value {
+var numberLte = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) < values[i].(Number) {
@@ -101,7 +82,7 @@ var numberLte = isNumbers.With(func(value Value) Value {
 	return True
 })
 
-var numberDiv = isNumbers.With(func(value Value) Value {
+var numberDiv = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	res := values[0].(Number)
 	for _, v := range values[1:] {
@@ -112,7 +93,7 @@ var numberDiv = isNumbers.With(func(value Value) Value {
 
 var numberIn = &Math{
 	v: func(value Value) error {
-		if err := isArray(value); err != nil {
+		if err := isArr(value); err != nil {
 			return err
 		}
 		values := value.(Array)
@@ -120,7 +101,7 @@ var numberIn = &Math{
 			return err
 		}
 		for _, v := range values[1:] {
-			if err := isNumbers(v); err != nil {
+			if err := isNumberArr(v); err != nil {
 				return err
 			}
 		}
@@ -136,15 +117,4 @@ var numberIn = &Math{
 		}
 		return True
 	},
-}
-
-var float64Mp = map[Operator]*Math{
-	Sum: numberSum,
-	Mul: numberMul,
-	Gt:  numberGt,
-	Gte: numberGte,
-	Lt:  numberLt,
-	Lte: numberLte,
-	Div: numberDiv,
-	In:  numberIn,
 }

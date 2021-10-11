@@ -1,5 +1,6 @@
 package exp_tree
 
+//NodeType indicate what type of note
 type NodeType int
 
 const (
@@ -9,32 +10,37 @@ const (
 	NVariable
 )
 
+//Node interface
 type Node interface {
-	t() NodeType
+	Type() NodeType
 }
 
-type Op struct {
+//Operation node
+type Operation struct {
 	op   Operator
 	args Node
 }
 
-func (Op) t() NodeType {
+func (Operation) Type() NodeType {
 	return NOperation
 }
 
+//Group composite node
 type Group []Node
 
-func (Group) t() NodeType {
+func (Group) Type() NodeType {
 	return NGroup
 }
 
+//Value node that store value
 type Value interface {
-	t() NodeType
-	f(op Operator) *Math
+	Type() NodeType
+	F(op Operator) *Math
 }
 
+//Variable node that take external value
 type Variable string
 
-func (Variable) t() NodeType {
+func (Variable) Type() NodeType {
 	return NVariable
 }

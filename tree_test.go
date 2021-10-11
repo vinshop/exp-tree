@@ -6,11 +6,11 @@ import (
 )
 
 func TestBool(t *testing.T) {
-	tree := Op{
+	tree := Operation{
 		op: And,
 		args: Group{
 			True,
-			Op{
+			Operation{
 				op: Or,
 				args: Group{
 					False,
@@ -27,7 +27,7 @@ func TestBool(t *testing.T) {
 }
 
 func TestNumberIn(t *testing.T) {
-	tree := Op{
+	tree := Operation{
 		op: In,
 		args: Group{
 			Number(1),
@@ -49,10 +49,10 @@ func TestNumberIn(t *testing.T) {
 }
 
 func TestNumber(t *testing.T) {
-	tree := Op{
+	tree := Operation{
 		op: Mul,
 		args: Group{
-			Op{
+			Operation{
 				op: Sum,
 				args: Group{
 					Number(1),
