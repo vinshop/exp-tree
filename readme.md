@@ -5,11 +5,17 @@
 Exp-tree is go library for parsing expression tree
 
 ## Installation
+
 ```sh
 go get -u github.com/vinshop/exp-tree
 ```
+
 ## Quick start
+
+### Format
+
 Expression tree is in format:
+
 ```json
 {
   "<operator>": [
@@ -25,12 +31,27 @@ Expression tree is in format:
   ]
 }
 ```
+
 example
+
 ```json
 {"and":["@a",{"lt":[1,2]}]}
 ```
+
 is equivalent to `@a and (1 < 2)` with `a` is a variable
+
+### Variable
+
+Variables use format `@<string>`, and will be replaced as `Value` from `Variables` when
+call `Tree.Calculate(v Variables)`
+
+Support for `String`, `Number` ( as float64), `Bool`, `Array` type
+
+With `Bool` type, we already define `True` and `False`
+You could use `et.Var(value)` to auto convert value into corresponding type
+
 ### Parse tree
+
 ```go
 package main
 
@@ -51,7 +72,9 @@ func main() {
 	fmt.Println(treeJSON)
 }
 ```
+
 ### Calculate
+
 ```go
 package main
 
@@ -71,7 +94,3 @@ func main() {
 	fmt.Println(res) // true
 }
 ```
-Current only support for String, Float64, Bool type
-
-With Bool type, we already define True and False
-You could use `et.Var(value)` to auto convert value into corresponding type

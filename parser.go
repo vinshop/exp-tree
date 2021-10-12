@@ -11,15 +11,15 @@ func parseTree(v interface{}) (Node, error) {
 	kind := reflect.TypeOf(v).Kind()
 	switch kind {
 	case reflect.Bool:
-		return Value{Bool(v.(bool))}, nil
+		return Bool(v.(bool)), nil
 	case reflect.Float64:
-		return Value{Float64(v.(float64))}, nil
+		return Number(v.(float64)), nil
 	case reflect.String:
 		vString, _ := v.(string)
 		if len(vString) > 0 && vString[0] == VariableIndicator {
 			return Variable(vString[1:]), nil
 		}
-		return Value{String(v.(string))}, nil
+		return String(v.(string)), nil
 	case reflect.Slice:
 		arr := reflect.ValueOf(v)
 		group := make(Group, 0, arr.Len())
@@ -34,21 +34,25 @@ func parseTree(v interface{}) (Node, error) {
 		return group, nil
 	case reflect.Map:
 		mp, _ := v.(map[string]interface{})
-		ops := make(Op)
+		if len(mp) != 1 {
+			return nil, ErrOpMustBeUnique
+		}
 		for op, node := range mp {
-			val, err := parseTree(node)
+			args, err := parseTree(node)
 			if err != nil {
 				return nil, err
 			}
-			ops[OpType(op)] = val
+			return &Operation{
+				op:   Operator(op),
+				args: args,
+			}, nil
 		}
-		return ops, nil
+		return nil, ErrParseTree
 	default:
 		return nil, ErrParseTree
 	}
 }
 
-//ParseTree parse a valid string into expression tree, else return ErrParseTree error
 func ParseTree(s string) (*Tree, error) {
 	res := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(s), &res); err != nil {
@@ -59,11 +63,6 @@ func ParseTree(s string) (*Tree, error) {
 		return nil, err
 	}
 	return &Tree{
-		head:      head,
+		head: head,
 	}, nil
-}
-
-func JSON(tree *Tree) (string, error) {
-	treeJSON, err := json.Marshal(tree.head)
-	return string(treeJSON), err
 }

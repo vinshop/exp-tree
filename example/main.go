@@ -10,13 +10,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	treeJSON, err := tree.JSON()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(treeJSON)
 	res, err := tree.Calculate(et.Variables{
-		"a": et.True,
+		"a": et.True, // or et.Var(true)
 	})
-	fmt.Println(res)
+	fmt.Println(res) // true
 }

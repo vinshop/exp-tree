@@ -1,15 +1,31 @@
 package exp_tree
 
 import (
-	"log"
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
-import "github.com/stretchr/testify/assert"
+
 func TestParseTree(t *testing.T) {
-	q := `{"and": ["@con", {"lt": [1, 2]}]}`
+	q := `{"and":[{"gt":[{"sum":[1,2,3]},5]},{"in":["hello",["hello","world"]]}]}`
 	tree, err := ParseTree(q)
 	assert.Nil(t, err)
-	treeJSON, err := JSON(tree)
+	fmt.Printf("%#v", tree)
+	res, err := tree.Calculate(nil)
 	assert.Nil(t, err)
-	log.Println(treeJSON)
+	assert.Equal(t, True, res)
+}
+
+func TestParseTree2(t *testing.T) {
+	q := `{"and": [{"in": ["@district", ["001"]]}, {"in": ["@province", ["01"]]}, {"in": ["@gt_level", [1, 2]]}, {"lte": ["@order.total_amount", 1000000]}]}`
+	tree, err := ParseTree(q)
+	assert.Nil(t, err)
+	resp, err := tree.Calculate(Variables{
+		"district":           Var("001"),
+		"province":           Var("01"),
+		"gt_level":           Var(1),
+		"order.total_amount": Var(10000),
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, True, resp)
 }

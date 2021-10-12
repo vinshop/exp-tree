@@ -6,17 +6,17 @@ import (
 	"strconv"
 )
 
-type NodeValue interface {
-	Validate(values ...NodeValue) error // validate before compute
-	ComputeMap() ComputeMap
-	Byte() []byte
+type Variables map[Variable]Value
+
+func (v Variables) Get(key Variable) (Value, error) {
+	value, ok := v[key]
+	if !ok {
+		return nil, ErrVarNotFound(string(key))
+	}
+	return value, nil
 }
 
-type NodeValueWithName interface {
-	Name() string
-}
-
-func Var(value interface{}) NodeValue {
+func Var(value interface{}) Value {
 	t := reflect.TypeOf(value).Kind()
 	switch t {
 	case reflect.String:
@@ -29,7 +29,7 @@ func Var(value interface{}) NodeValue {
 		fallthrough
 	case reflect.Float32, reflect.Float64:
 		v, _ := strconv.ParseFloat(fmt.Sprint(value), 64)
-		return Float64(v)
+		return Number(v)
 	}
 	return nil
 }

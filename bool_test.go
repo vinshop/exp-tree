@@ -1,20 +1,38 @@
 package exp_tree
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestBool_Byte(t *testing.T) {
-	assert.Equal(t, []byte("true"), True.Byte())
-	assert.Equal(t, []byte("false"), False.Byte())
+func TestBool_CastErr(t *testing.T) {
+	res, err := calc(None, Op(And, True, Var(1)), nil)
+	assert.Error(t, err)
+	fmt.Println(err)
+	assert.Nil(t, res)
 }
 
-func TestBool_Validate(t *testing.T) {
-	assert.Nil(t, True.Validate(True, False))
-	assert.Equal(t, ErrCastBool(Float64(1)), True.Validate(True, False, Float64(1)))
+func TestBool_And(t *testing.T) {
+	bools := []Bool{True, False}
+	for _, a := range bools {
+		for _, b := range bools {
+			tree := Op(And, a, b)
+			res, err := calc(None, tree, nil)
+			assert.Nil(t, err)
+			assert.Equal(t, a && b, res)
+		}
+	}
 }
 
-func TestBool_ComputeMap(t *testing.T) {
-	assert.Equal(t, boolComputeMap, True.ComputeMap())
+func TestBool_Or(t *testing.T) {
+	bools := []Bool{True, False}
+	for _, a := range bools {
+		for _, b := range bools {
+			tree := Op(Or, a, b)
+			res, err := calc(None, tree, nil)
+			assert.Nil(t, err)
+			assert.Equal(t, a || b, res)
+		}
+	}
 }

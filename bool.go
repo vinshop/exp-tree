@@ -1,86 +1,39 @@
 package exp_tree
 
-import "fmt"
-
-//Bool type
+//Bool store bool value
 type Bool bool
 
-const (
-	True  Bool = true
-	False Bool = false
-)
-
-var ErrCastBool = func(v NodeValue) error { return fmt.Errorf("%v is not boolean", v) }
-
-var boolComputeMap = ComputeMap{
-	None: boolAnd,
-	And:  boolAnd,
-	Or:   boolOr,
-	Not:  boolNot,
-	Eq:   boolEq,
-	Xor:  boolXor,
+func (b Bool) F(op Operator) *Math {
+	return boolMp[op]
 }
 
-var boolAnd ComputeFunc = func(values ...NodeValue) NodeValue {
-	for _, v := range values {
-		vBool := v.(Bool)
-		if !vBool {
+func (b Bool) Type() NodeType {
+	return NValue
+}
+
+const True = Bool(true)
+const False = Bool(false)
+
+var boolAnd = isBoolArr.With(func(values Value) Value {
+	for _, v := range values.(Array) {
+		if v == False {
 			return False
 		}
 	}
 	return True
-}
+})
 
-var boolOr ComputeFunc = func(values ...NodeValue) NodeValue {
-	for _, v := range values {
-		vBool := v.(Bool)
-		if vBool {
+var boolOr = isBoolArr.With(func(values Value) Value {
+	for _, v := range values.(Array) {
+		if v == True {
 			return True
 		}
 	}
 	return False
-}
+})
 
-var boolNot ComputeFunc = func(values ...NodeValue) NodeValue {
-	res := boolAnd(values...)
-	return !res.(Bool)
-}
-
-var boolEq ComputeFunc = func(values ...NodeValue) NodeValue {
-	for i := 1; i < len(values); i++ {
-		if values[i-1].(Bool) != values[i].(Bool) {
-			return False
-		}
-	}
-	return True
-}
-
-var boolXor ComputeFunc = func(values ...NodeValue) NodeValue {
-	res := False
-	for i := 1; i < len(values); i++ {
-		res = res != values[i].(Bool)
-	}
-	return res
-}
-
-func validateBool(values ...NodeValue) error {
-	for _, v := range values {
-		_, ok := v.(Bool)
-		if !ok {
-			return ErrCastBool(v)
-		}
-	}
-	return nil
-}
-
-func (b Bool) Validate(value ...NodeValue) error {
-	return validateBool(value...)
-}
-
-func (Bool) ComputeMap() ComputeMap {
-	return boolComputeMap
-}
-
-func (b Bool) Byte() []byte {
-	return []byte(fmt.Sprint(b))
+var boolMp = map[Operator]*Math{
+	None: Keep,
+	And:  boolAnd,
+	Or:   boolOr,
 }
