@@ -17,7 +17,7 @@ func TestParseTree(t *testing.T) {
 }
 
 func TestParseTree2(t *testing.T) {
-	q := `{"and": [{"in": ["@district", "001"]}, {"in": ["@province", "01"]}, {"in": ["@gt_level", 1, 2]}, {"lte": ["@order.total_amount", 1000000]}]}`
+	q := `{"and": [{"in": ["@district", ["001"]]}, {"in": ["@province", ["01"]]}, {"in": ["@gt_level", [1, 2]]}, {"lte": ["@order.total_amount", 1000000]}]}`
 	tree, err := ParseTree(q)
 	assert.Nil(t, err)
 	resp, err := tree.Calculate(Variables{
@@ -27,5 +27,5 @@ func TestParseTree2(t *testing.T) {
 		"order.total_amount": Var(10000),
 	})
 	assert.Nil(t, err)
-	fmt.Println(resp)
+	assert.Equal(t, True, resp)
 }
