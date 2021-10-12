@@ -14,7 +14,19 @@ func (s String) F(op Operator) *Math {
 var stringMap = map[Operator]*Math{
 	None: Keep,
 	In:   stringIn,
+	Eq:   stringEqual,
 }
+
+var stringEqual = isStringArr.With(func(value Value) Value {
+	values := value.(Array)
+	now := values[0]
+	for _, v := range values[1:] {
+		if v != now {
+			return False
+		}
+	}
+	return True
+})
 
 var stringIn = &Math{
 	v: func(value Value) error {

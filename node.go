@@ -17,12 +17,22 @@ type Node interface {
 
 //Operation node
 type Operation struct {
-	op   Operator
-	args Node
+	op     Operator
+	args   Node
+	result Value // for debugging
 }
 
-func (Operation) Type() NodeType {
+func (*Operation) Type() NodeType {
 	return NOperation
+}
+
+//Op create pointer to Operation
+func Op(op Operator, args ...Node) *Operation {
+	return &Operation{
+		op:     op,
+		args:   Group(args),
+		result: nil,
+	}
 }
 
 //Group composite node

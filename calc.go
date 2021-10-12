@@ -1,25 +1,37 @@
 package exp_tree
 
-func calc(op Operator, t Node) (Value, error) {
+func calcValue(op Operator, value Value) (Value, error) {
+	math := value.F(op)
+	if math == nil {
+		return nil, ErrOperatorNotSupported(op, value)
+	}
+	return math.calc(value)
+}
+
+func calc(op Operator, t Node, vars Variables) (Value, error) {
 	switch t.Type() {
+	case NVariable:
+		return vars.Get(t.(Variable))
 	case NValue:
 		value := t.(Value)
-		return value.F(op).calc(value)
+		return calcValue(op, value)
 	case NOperation:
-		op := t.(Operation)
-		return calc(op.op, op.args)
+		op := t.(*Operation)
+		res, err := calc(op.op, op.args, vars)
+		op.result = res
+		return res, err
 	case NGroup:
 		group := t.(Group)
 		arr := make(Array, 0, len(group))
 		for _, n := range group {
-			value, err := calc(None, n)
+			value, err := calc(None, n, vars)
 			if err != nil {
 				return nil, err
 			}
 			arr = append(arr, value)
 		}
-		return calc(op, arr)
+		return calc(op, arr, vars)
 	default:
-		panic("err")
+		return nil, ErrCalcTree
 	}
 }

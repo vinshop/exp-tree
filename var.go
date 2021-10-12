@@ -6,6 +6,16 @@ import (
 	"strconv"
 )
 
+type Variables map[Variable]Value
+
+func (v Variables) Get(key Variable) (Value, error) {
+	value, ok := v[key]
+	if !ok {
+		return nil, ErrVarNotFound(string(key))
+	}
+	return value, nil
+}
+
 func Var(value interface{}) Value {
 	t := reflect.TypeOf(value).Kind()
 	switch t {

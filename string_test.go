@@ -6,7 +6,7 @@ import (
 )
 
 func TestString_In(t *testing.T) {
-	tree := Operation{
+	tree := &Operation{
 		op: In,
 		args: Group{
 			Var("hello"),
@@ -16,7 +16,7 @@ func TestString_In(t *testing.T) {
 			},
 		},
 	}
-	res, err := calc(And, tree)
+	res, err := calc(And, tree, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, True, res)
 }

@@ -24,7 +24,18 @@ var numberMap = map[Operator]*Math{
 	Lte: numberLte,
 	Div: numberDiv,
 	In:  numberIn,
+	Eq:  numberEq,
 }
+
+var numberEq = isNumberArr.With(func(value Value) Value {
+	values := value.(Array)
+	for _, v := range values[1:] {
+		if v != values[0] {
+			return False
+		}
+	}
+	return True
+})
 
 var numberSum = isNumberArr.With(func(values Value) Value {
 	res := Number(0)
@@ -42,7 +53,7 @@ var numberMul = isNumberArr.With(func(values Value) Value {
 	return res
 })
 
-var numberGt = isNumberArr.With(func(value Value) Value {
+var numberLt = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) >= values[i].(Number) {
@@ -52,7 +63,7 @@ var numberGt = isNumberArr.With(func(value Value) Value {
 	return True
 })
 
-var numberGte = isNumberArr.With(func(value Value) Value {
+var numberLte = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) > values[i].(Number) {
@@ -62,7 +73,7 @@ var numberGte = isNumberArr.With(func(value Value) Value {
 	return True
 })
 
-var numberLt = isNumberArr.With(func(value Value) Value {
+var numberGt = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) <= values[i].(Number) {
@@ -72,7 +83,7 @@ var numberLt = isNumberArr.With(func(value Value) Value {
 	return True
 })
 
-var numberLte = isNumberArr.With(func(value Value) Value {
+var numberGte = isNumberArr.With(func(value Value) Value {
 	values := value.(Array)
 	for i := 1; i < len(values); i++ {
 		if values[i-1].(Number) < values[i].(Number) {

@@ -6,11 +6,11 @@ import (
 )
 
 func TestBool(t *testing.T) {
-	tree := Operation{
+	tree := &Operation{
 		op: And,
 		args: Group{
 			True,
-			Operation{
+			&Operation{
 				op: Or,
 				args: Group{
 					False,
@@ -21,13 +21,13 @@ func TestBool(t *testing.T) {
 	}
 	// True and ( False or True )
 
-	res, err := calc(None, tree)
+	res, err := calc(None, tree, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, True, res)
 }
 
 func TestNumberIn(t *testing.T) {
-	tree := Operation{
+	tree := &Operation{
 		op: In,
 		args: Group{
 			Number(1),
@@ -43,16 +43,16 @@ func TestNumberIn(t *testing.T) {
 		},
 	}
 
-	resp, err := calc(And, tree)
+	resp, err := calc(And, tree, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, True, resp)
 }
 
 func TestNumber(t *testing.T) {
-	tree := Operation{
+	tree := &Operation{
 		op: Mul,
 		args: Group{
-			Operation{
+			&Operation{
 				op: Sum,
 				args: Group{
 					Number(1),
@@ -64,7 +64,7 @@ func TestNumber(t *testing.T) {
 		},
 	}
 
-	res, err := calc(None, tree)
+	res, err := calc(None, tree, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, Number((1+2+3)*2), res)
 }
