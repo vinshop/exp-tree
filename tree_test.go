@@ -5,66 +5,20 @@ import (
 	"testing"
 )
 
-func TestBool(t *testing.T) {
-	tree := &Operation{
-		op: And,
-		args: Group{
-			True,
-			&Operation{
-				op: Or,
-				args: Group{
-					False,
-					True,
-				},
-			},
-		},
-	}
-	// True and ( False or True )
-
-	res, err := calc(None, tree, nil)
+func TestJSON(t *testing.T) {
+	q := `{"and":["@a",{"lt":[1,2]}]}`
+	tree, err := ParseTree(q)
 	assert.Nil(t, err)
-	assert.Equal(t, True, res)
+	data, err := tree.JSON()
+	assert.Nil(t, err)
+	assert.Equal(t, q, data)
 }
 
-func TestNumberIn(t *testing.T) {
-	tree := &Operation{
-		op: In,
-		args: Group{
-			Number(1),
-			Array{
-				Number(1),
-				Number(2),
-			},
-			Array{
-				Number(1),
-				Number(2),
-				Number(3),
-			},
-		},
-	}
-
-	resp, err := calc(And, tree, nil)
+func TestJSON2(t *testing.T) {
+	q :=`{"and":[{"in":["@district","001"]},{"in":["@province","01"]},{"in":["@gt_level",1,2]},{"lte":["@order.total_amount",1000000]}]}`
+	tree, err := ParseTree(q)
 	assert.Nil(t, err)
-	assert.Equal(t, True, resp)
-}
-
-func TestNumber(t *testing.T) {
-	tree := &Operation{
-		op: Mul,
-		args: Group{
-			&Operation{
-				op: Sum,
-				args: Group{
-					Number(1),
-					Number(2),
-					Number(3),
-				},
-			},
-			Number(2),
-		},
-	}
-
-	res, err := calc(None, tree, nil)
+	data, err := tree.JSON()
 	assert.Nil(t, err)
-	assert.Equal(t, Number((1+2+3)*2), res)
+	assert.Equal(t, q, data)
 }

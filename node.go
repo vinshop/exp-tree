@@ -1,5 +1,10 @@
 package exp_tree
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 //NodeType indicate what type of note
 type NodeType int
 
@@ -24,6 +29,11 @@ type Operation struct {
 
 func (*Operation) Type() NodeType {
 	return NOperation
+}
+
+//MarshalJSON custom JSON marshal
+func (o Operation) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[Operator]Node{o.op: o.args})
 }
 
 //Op create pointer to Operation
@@ -53,4 +63,8 @@ type Variable string
 
 func (Variable) Type() NodeType {
 	return NVariable
+}
+
+func (v Variable) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%c%s"`, VariableIndicator, v)), nil
 }
