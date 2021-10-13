@@ -32,8 +32,13 @@ var boolOr = isBoolArr.With(func(values Value) Value {
 	return False
 })
 
+var boolNot = isBool.With(func(value Value) Value {
+	return !value.(Bool)
+})
+
 var boolMp = map[Operator]*Math{
 	None: Keep,
 	And:  boolAnd,
 	Or:   boolOr,
+	Not:  boolNot,
 }

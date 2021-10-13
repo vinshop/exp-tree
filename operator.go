@@ -15,4 +15,5 @@ const (
 	Gt   Operator = "gt"
 	In   Operator = "in"
 	Eq   Operator = "eq"
+	Not  Operator = "not"
 )
