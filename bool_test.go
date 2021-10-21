@@ -36,3 +36,13 @@ func TestBool_Or(t *testing.T) {
 		}
 	}
 }
+
+func TestBool_Not(t *testing.T) {
+	bools := []Bool{True, False}
+	for _, a := range bools {
+		tree := Op(Not, a)
+		res, err := calc(None, tree, nil)
+		assert.Nil(t, err)
+		assert.Equal(t, !a, res)
+	}
+}

@@ -38,9 +38,15 @@ func (o Operation) MarshalJSON() ([]byte, error) {
 
 //Op create pointer to Operation
 func Op(op Operator, args ...Node) *Operation {
+	var arg Node
+	if len(args) > 1 {
+		arg = Group(args)
+	} else {
+		arg = args[0]
+	}
 	return &Operation{
 		op:     op,
-		args:   Group(args),
+		args:   arg,
 		result: nil,
 	}
 }

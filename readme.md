@@ -50,6 +50,16 @@ Support for `String`, `Number` ( as float64), `Bool`, `Array` type
 With `Bool` type, we already define `True` and `False`
 You could use `et.Var(value)` to auto convert value into corresponding type
 
+### Data type
+[Bool](doc/bool.md)
+
+[Number](doc/number.md)
+
+[Array](doc/arr.md)
+
+### Operator
+[Operator](doc/operator.md)
+
 ### Parse tree
 
 ```go
