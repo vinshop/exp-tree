@@ -49,7 +49,3 @@ func (a Array) toMap() map[Value]int {
 	}
 	return mp
 }
-
-var any ValidateFunc = func(_ Value) error {
-	return nil
-}
