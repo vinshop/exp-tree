@@ -17,6 +17,9 @@ func (v Variables) Get(key Variable) (Value, error) {
 }
 
 func Var(value interface{}) Value {
+	if value == nil {
+		return nil
+	}
 	t := reflect.TypeOf(value).Kind()
 	switch t {
 	case reflect.String:
