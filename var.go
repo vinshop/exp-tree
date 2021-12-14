@@ -16,8 +16,16 @@ func (v Variables) Get(key Variable) (Value, error) {
 	return value, nil
 }
 
-func Var(value interface{}) Value {
+func Var(value ...interface{}) Value {
+	if len(value) == 1 {
+		return varOne(value[0])
+	}
+	return varOne(value)
+}
+
+func varOne(value interface{}) Value {
 	t := reflect.TypeOf(value).Kind()
+	val := reflect.ValueOf(value)
 	switch t {
 	case reflect.String:
 		return String(value.(string))
@@ -30,6 +38,12 @@ func Var(value interface{}) Value {
 	case reflect.Float32, reflect.Float64:
 		v, _ := strconv.ParseFloat(fmt.Sprint(value), 64)
 		return Number(v)
+	case reflect.Slice, reflect.Array:
+		arr := make(Array, 0, val.Len())
+		for i := 0; i < val.Len(); i++ {
+			arr = append(arr, Var(val.Index(i).Interface()))
+		}
+		return arr
 	}
 	return nil
 }

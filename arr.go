@@ -39,6 +39,26 @@ var arrMap = map[Operator]*Math{
 			}
 			return True
 		}),
+	OneIn: isArr.With(
+		func(value Value) Value {
+			values := value.(Array)
+			mp := values[0].(Array).toMap()
+			for _, v := range values[1:] {
+				ok := False
+				vMp := v.(Array).toMap()
+				for k := range mp {
+					if vMp[k] != 0 {
+						ok = True
+						break
+					}
+				}
+				if !ok {
+					return False
+				}
+			}
+			return True
+		},
+	),
 }
 
 //toMap convert Array to with key is Value and value is number of Value in Array
