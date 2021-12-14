@@ -8,19 +8,54 @@ import (
 func TestArr_In(t *testing.T) {
 	tree := Op(In,
 		Variable("input"),
-		Array{Var(1), Var(2), Var(3)},
-		Array{Var(2), Var(3), Var(4)},
+		Var(1, 2, 3),
+		Var(2, 3, 4),
 	)
 
 	resp, err := calc(None, tree, Variables{
-		"input": Array{Var(3), Var(2)},
+		"input": Var(3, 2),
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, True, resp)
 
 	resp, err = calc(None, tree, Variables{
-		"input": Array{Var(1), Var(2)},
+		"input": Var(1, 2),
 	})
+	assert.Nil(t, err)
+	assert.Equal(t, False, resp)
+}
+
+func TestArr_OneIn(t *testing.T) {
+	tree := Op(OneIn,
+		Variable("input"),
+		Var(1, 2, 3),
+		Var(2, 3, 4),
+	)
+
+	resp, err := calc(None, tree, Variables{
+		"input": Var(1, 2),
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, True, resp)
+
+	resp, err = calc(None, tree, Variables{
+		"input": Var(1, 3),
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, True, resp)
+
+	resp, err = calc(None, tree, Variables{
+		"input": Var(1, 4),
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, True, resp)
+
+	resp, err = calc(None, tree, Variables{
+		"input": Var(1, 5),
+	})
+
 	assert.Nil(t, err)
 	assert.Equal(t, False, resp)
 }

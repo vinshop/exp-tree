@@ -158,12 +158,12 @@ func TestNumber_In(t *testing.T) {
 		Variable("A"),
 	)
 	res, err := calc(None, tree, Variables{
-		"A": Array{Var(1), Var(2)},
+		"A": Var(1, 2),
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, True, res)
 	res, err = calc(None, tree, Variables{
-		"A": Array{Var(2), Var(3)},
+		"A": Var(2, 3),
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, False, res)
