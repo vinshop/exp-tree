@@ -13,6 +13,7 @@ const (
 	NGroup
 	NValue
 	NVariable
+	NNested
 )
 
 //Node interface

@@ -4,16 +4,35 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 type Variables map[Variable]Value
 
 func (v Variables) Get(key Variable) (Value, error) {
-	value, ok := v[key]
+	path := strings.Split(string(key), ".")
+	value, ok := v[Variable(path[0])]
+	iValue := value.(interface{})
 	if !ok {
+		return nil, ErrVarNotFound(path[0])
+	}
+	var sub []string
+	if len(path) > 1 {
+		nested, ok := value.(Nested)
+		if !ok {
+			return nil, ErrNotNested(value)
+		}
+		iValue = nested.Value()
+		sub = path[1:]
+	}
+	result, err := extract(iValue, sub)
+	if err == ErrNilValue {
 		return nil, ErrVarNotFound(string(key))
 	}
-	return value, nil
+	if _, ok := result.(Value); ok {
+		return result.(Value), nil
+	}
+	return Var(result), nil
 }
 
 func Var(value ...interface{}) Value {
@@ -44,6 +63,8 @@ func varOne(value interface{}) Value {
 			arr = append(arr, Var(val.Index(i).Interface()))
 		}
 		return arr
+	case reflect.Struct:
+		return Nested{value}
 	}
 	return nil
 }

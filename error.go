@@ -21,6 +21,10 @@ var ErrNotString = func(v interface{}) error {
 	return fmt.Errorf("ErrNotString: %v is not a string", v)
 }
 
+var ErrNotNested = func(v interface{}) error {
+	return fmt.Errorf("ErrNotString: %v is not a nested struct", v)
+}
+
 var ErrVarNotFound = func(key string) error {
 	return fmt.Errorf("ErrVarNotFound: variable %v not found", key)
 }
