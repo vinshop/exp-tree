@@ -57,6 +57,8 @@ You could use `et.Var(value)` to auto convert value into corresponding type
 
 [Array](doc/arr.md)
 
+[Nested](doc/nested.md)
+
 ### Operator
 [Operator](doc/operator.md)
 
