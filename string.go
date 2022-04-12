@@ -11,6 +11,10 @@ func (s String) F(op Operator) *Math {
 	return stringMap[op]
 }
 
+func (String) Variables() Variables {
+	return nil
+}
+
 var stringMap = map[Operator]*Math{
 	None: Keep,
 	In:   stringIn,

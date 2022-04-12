@@ -7,6 +7,10 @@ func (a Array) Type() NodeType {
 	return NValue
 }
 
+func (Array) Variables() Variables {
+	return nil
+}
+
 func (a Array) F(op Operator) *Math {
 
 	switch op {
