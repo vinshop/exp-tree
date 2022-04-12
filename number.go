@@ -15,6 +15,10 @@ func (n Number) Type() NodeType {
 	return NValue
 }
 
+func (Number) Variables() Variables {
+	return nil
+}
+
 var numberMap = map[Operator]*Math{
 	Sum: numberSum,
 	Mul: numberMul,

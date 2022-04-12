@@ -18,6 +18,7 @@ const (
 //Node interface
 type Node interface {
 	Type() NodeType
+	Variables() Variables
 }
 
 //Operation node
@@ -29,6 +30,10 @@ type Operation struct {
 
 func (*Operation) Type() NodeType {
 	return NOperation
+}
+
+func (o Operation) Variables() Variables {
+	return o.args.Variables()
 }
 
 //MarshalJSON custom JSON marshal
@@ -58,10 +63,21 @@ func (Group) Type() NodeType {
 	return NGroup
 }
 
+func (g Group) Variables() Variables {
+	res := make(Variables)
+	for _, node := range g {
+		for k := range node.Variables() {
+			res[k] = nil
+		}
+	}
+	return res
+}
+
 //Value node that store value
 type Value interface {
 	Type() NodeType
 	F(op Operator) *Math
+	Variables() Variables
 }
 
 //Variable node that take external value
@@ -69,6 +85,9 @@ type Variable string
 
 func (Variable) Type() NodeType {
 	return NVariable
+}
+func (v Variable) Variables() Variables {
+	return Variables{v: nil}
 }
 
 func (v Variable) MarshalJSON() ([]byte, error) {

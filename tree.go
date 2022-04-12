@@ -20,3 +20,7 @@ func (t *Tree) JSON() (string, error) {
 	}
 	return string(data), nil
 }
+
+func (t *Tree) Variables() Variables {
+	return t.head.Variables()
+}

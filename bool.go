@@ -11,6 +11,10 @@ func (b Bool) Type() NodeType {
 	return NValue
 }
 
+func (b Bool) Variables() Variables {
+	return nil
+}
+
 const True = Bool(true)
 const False = Bool(false)
 
