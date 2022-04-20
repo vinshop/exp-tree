@@ -19,7 +19,51 @@ var stringMap = map[Operator]*Math{
 	None: Keep,
 	In:   stringIn,
 	Eq:   stringEqual,
+	Lt:   stringLt,
+	Lte:  stringLte,
+	Gt:   stringGt,
+	Gte:  stringGte,
 }
+
+var stringLt = isStringArr.With(func(value Value) Value {
+	values := value.(Array)
+	for i := 0; i < len(values)-1; i++ {
+		if values[i].(String) >= values[i+1].(String) {
+			return False
+		}
+	}
+	return True
+})
+
+var stringLte = isStringArr.With(func(value Value) Value {
+	values := value.(Array)
+	for i := 0; i < len(values)-1; i++ {
+		if values[i].(String) > values[i+1].(String) {
+			return False
+		}
+	}
+	return True
+})
+
+var stringGt = isStringArr.With(func(value Value) Value {
+	values := value.(Array)
+	for i := 0; i < len(values)-1; i++ {
+		if values[i].(String) <= values[i+1].(String) {
+			return False
+		}
+	}
+	return True
+})
+
+var stringGte = isStringArr.With(func(value Value) Value {
+	values := value.(Array)
+	for i := 0; i < len(values)-1; i++ {
+		if values[i].(String) < values[i+1].(String) {
+			return False
+		}
+	}
+	return True
+})
 
 var stringEqual = isStringArr.With(func(value Value) Value {
 	values := value.(Array)
