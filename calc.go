@@ -11,15 +11,21 @@ func calcValue(op Operator, value Value) (Value, error) {
 func calc(op Operator, t Node, vars Variables) (Value, error) {
 	switch t.Type() {
 	case NVariable:
-		return vars.Get(t.(Variable))
+		val, err := vars.Get(t.(Variable))
+		if err != nil {
+			return nil, err
+		}
+		return calcValue(op, val)
 	case NValue:
 		value := t.(Value)
 		return calcValue(op, value)
 	case NOperation:
-		op := t.(*Operation)
-		res, err := calc(op.op, op.args, vars)
-		op.result = res
-		return res, err
+		nop := t.(*Operation)
+		res, err := calc(nop.op, nop.args, vars)
+		if err != nil {
+			return nil, err
+		}
+		return calcValue(op, res)
 	case NGroup:
 		group := t.(Group)
 		arr := make(Array, 0, len(group))
