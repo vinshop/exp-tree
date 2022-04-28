@@ -48,7 +48,7 @@ func TestBool_Not(t *testing.T) {
 }
 
 func TestReal(t *testing.T) {
-	j := `{"not":{"or":["@blacklist"]}}`
+	j := `{"and":[{"not":{"or":["@blacklist"]}},{"or":[{"and":[{"gte":["@APP_VERSION","46"]},{"eq":["@OS","ios"]}]}]}]}`
 	tree, err := ParseTree(j)
 	assert.Nil(t, err)
 	res, err := tree.Calculate(Variables{
