@@ -16,7 +16,7 @@ func TestString_In(t *testing.T) {
 			},
 		},
 	}
-	res, err := calc(And, tree, nil)
+	res, err := calc(None, tree, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, True, res)
 }
