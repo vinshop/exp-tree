@@ -1,68 +1,104 @@
 package exp_tree
 
 import (
-	"encoding/json"
-	"reflect"
+	"fmt"
+	"github.com/vinshop/exp-tree/ds"
+	"strconv"
+	"strings"
 )
 
-const VariableIndicator = '@'
+type Direction int
 
-func parseTree(v interface{}) (Node, error) {
-	kind := reflect.TypeOf(v).Kind()
-	switch kind {
-	case reflect.Bool:
-		return Bool(v.(bool)), nil
-	case reflect.Float64:
-		return Number(v.(float64)), nil
-	case reflect.String:
-		vString, _ := v.(string)
-		if len(vString) > 0 && vString[0] == VariableIndicator {
-			return Variable(vString[1:]), nil
-		}
-		return String(v.(string)), nil
-	case reflect.Slice:
-		arr := reflect.ValueOf(v)
-		group := make(Group, 0, arr.Len())
-		for i := 0; i < arr.Len(); i++ {
-			e := arr.Index(i).Interface()
-			eVal, err := parseTree(e)
-			if err != nil {
-				return nil, err
-			}
-			group = append(group, eVal)
-		}
-		return group, nil
-	case reflect.Map:
-		mp, _ := v.(map[string]interface{})
-		if len(mp) != 1 {
-			return nil, ErrOpMustBeUnique
-		}
-		for op, node := range mp {
-			args, err := parseTree(node)
-			if err != nil {
-				return nil, err
-			}
-			return &Operation{
-				op:   Operator(op),
-				args: args,
-			}, nil
-		}
-		return nil, ErrParseTree
-	default:
-		return nil, ErrParseTree
-	}
+const (
+	Left Direction = iota
+	Right
+)
+
+type Operator struct {
+	Priority  int
+	Direction Direction
 }
 
-func ParseTree(s string) (*Tree, error) {
-	res := make(map[string]interface{})
-	if err := json.Unmarshal([]byte(s), &res); err != nil {
-		return nil, err
-	}
-	head, err := parseTree(res)
+var OM = map[string]*Operator{
+	"^": {4, Right},
+	"*": {3, Left},
+	"/": {3, Left},
+	"+": {2, Left},
+	"-": {2, Left},
+}
+
+func isNumber(e string) (float64, bool) {
+	num, err := strconv.ParseFloat(e, 64)
 	if err != nil {
-		return nil, err
+		return 0, false
 	}
-	return &Tree{
-		head: head,
-	}, nil
+	return num, true
+}
+
+func isOp(e string) (*Operator, bool) {
+	op, ok := OM[e]
+	if !ok {
+		return nil, false
+	}
+	return op, true
+}
+
+func isFun(s string) bool {
+	return false
+}
+
+func Parse(exp string) {
+	tokens := strings.Split(exp, " ")
+	output := ds.NewQueue()
+	op := ds.NewStack()
+	for _, token := range tokens {
+		if _, ok := isNumber(token); ok {
+			output.Push(token)
+			continue
+		}
+		if _, ok := isOp(token); ok {
+			for !op.Empty() {
+				top := op.Top().(string)
+				if top == "(" {
+					break
+				}
+				if OM[top].Priority > OM[token].Priority || (OM[token].Direction == Left && OM[token].Priority == OM[top].Priority) {
+					output.Push(top)
+					op.Pop()
+					continue
+				}
+				break
+			}
+			op.Push(token)
+			continue
+		}
+		if token == "(" {
+			op.Push("(")
+			continue
+		}
+		if token == ")" {
+			for {
+				if op.Empty() {
+					panic("err")
+				}
+				top := op.Top().(string)
+				if top == "(" {
+					break
+				}
+				output.Push(top)
+				op.Pop()
+			}
+			op.Pop()
+			continue
+		}
+
+	}
+	for !op.Empty() {
+		output.Push(op.Pop())
+	}
+	s := strings.Builder{}
+	for !output.Empty() {
+		s.WriteString(output.Pop().(string))
+	}
+	fmt.Println(s.String())
 }
